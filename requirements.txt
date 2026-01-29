@@ -1,0 +1,5 @@
+fastapi
+pandas
+twilio
+google-generativeai
+pydantic
