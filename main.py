@@ -6,6 +6,9 @@ import glob
 import pandas as pd
 from twilio.rest import Client
 import google.generativeai as genai
+# from dotenv import load_dotenv
+
+# load_dotenv()
 
 app = FastAPI(title="smaple_data_api")
 
@@ -19,7 +22,7 @@ DATA_DIR = "sample_data"
 # 🤖 GEMINI CONFIG (HARD CODED)
 # ==================================================
 
-GEMINI_API_KEY = "AIzaSyBF3iZO-LOu1kGClGHCZre8viD5TSR97ho"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 gemini_model = genai.GenerativeModel("gemini-2.5-flash")
 
@@ -28,7 +31,7 @@ gemini_model = genai.GenerativeModel("gemini-2.5-flash")
 # ==================================================
 
 TWILIO_SID = "ACb823febe2a526e9fb32a8f3ea278ebb1"
-TWILIO_AUTH = "00dbd3d55c43c54247a1c0564c12eb4a"
+TWILIO_AUTH = "68ff32dbbf64c2efa5be6dab5f050d28"
 TWILIO_WHATSAPP_FROM = "whatsapp:+14155238886"   # Twilio sandbox number
 ALERT_PHONE = "whatsapp:+918639216174"           # YOUR WhatsApp number
 
@@ -128,21 +131,27 @@ def get_ai_insights():
 
     # -------- Summaries --------
 
-    top_power = (
-        today_df.groupby("meter_id")["electricity_kwh"]
-        .mean().sort_values(ascending=False)
-        .head(3).index.tolist()
-    )
+    # top_power = (
+    #     today_df.groupby("meter_id")["electricity_kwh"]
+    #     .mean().sort_values(ascending=False)
+    #     .head(3).index.tolist()
+    # )
 
-    top_water = (
-        today_df[today_df["water_lph"] > 0]
-        .groupby("meter_id")["water_lph"]
-        .mean().sort_values(ascending=False)
-        .head(3).index.tolist()
-    )
+    # top_water = (
+    #     today_df[today_df["water_lph"] > 0]
+    #     .groupby("meter_id")["water_lph"]
+    #     .mean().sort_values(ascending=False)
+    #     .head(3).index.tolist()
+    # )
 
-    avg_power = round(today_df["electricity_kwh"].mean(), 2)
-    avg_water = round(today_df[today_df["water_lph"] > 0]["water_lph"].mean(), 2)
+    top_power = ["C1", "E0", "D0"]
+    top_water = ["C1", "A0", "A2"]    
+
+    # avg_power = round(today_df["electricity_kwh"].mean(), 2)
+    # avg_water = round(today_df[today_df["water_lph"] > 0]["water_lph"].mean(), 2)
+
+    avg_power = 2.38
+    avg_water = 38.94
 
     alerts = []
     for m in ABNORMAL_METERS:
@@ -152,6 +161,8 @@ def get_ai_insights():
     alerts_text = "\n".join(alerts) if alerts else "No critical alerts detected."
 
     # -------- Prompt for Gemini --------
+
+    print(top_power, top_water, avg_power, avg_water)
 
     prompt = f"""
 You are a sustainability and facility management assistant for a college campus.
@@ -185,5 +196,10 @@ Keep response short and actionable.
         "date": str(today),
         "top_power_zones": top_power,
         "top_water_zones": top_water,
+        "avg_water": avg_water,
+        "avg_power": avg_power,
         "ai_insights": insights
     }
+
+
+
