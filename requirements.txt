@@ -1,5 +1,4 @@
 fastapi
-pandas
 twilio
 google-generativeai
-pydantic
+python-dotenv
