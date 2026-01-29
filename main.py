@@ -116,18 +116,18 @@ def get_readings(req: MeterRequest):
 @app.get("/get_insights")
 def get_ai_insights():
 
-    # -------- Load all CSVs --------
-    files = glob.glob(os.path.join(DATA_DIR, "*.csv"))
+    # # -------- Load all CSVs --------
+    # files = glob.glob(os.path.join(DATA_DIR, "*.csv"))
 
-    if not files:
-        return {"error": "No data files found"}
+    # if not files:
+    #     return {"error": "No data files found"}
 
-    dfs = [pd.read_csv(f, parse_dates=["timestamp"]) for f in files]
-    data = pd.concat(dfs, ignore_index=True)
+    # dfs = [pd.read_csv(f, parse_dates=["timestamp"]) for f in files]
+    # data = pd.concat(dfs, ignore_index=True)
 
-    data["date"] = pd.to_datetime(data["timestamp"]).dt.date
-    today = data["date"].max()
-    today_df = data[data["date"] == today]
+    # data["date"] = pd.to_datetime(data["timestamp"]).dt.date
+    # today = data["date"].max()
+    # today_df = data[data["date"] == today]
 
     # -------- Summaries --------
 
@@ -200,6 +200,7 @@ Keep response short and actionable.
         "avg_power": avg_power,
         "ai_insights": insights
     }
+
 
 
 
